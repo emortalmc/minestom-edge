@@ -3,7 +3,6 @@ package dev.emortal.minestom.edge;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.RemovalCause;
-import dev.emortal.api.agonessdk.AgonesUtils;
 import dev.emortal.api.message.matchmaker.MatchCreatedMessage;
 import dev.emortal.api.model.matchmaker.Assignment;
 import dev.emortal.api.model.matchmaker.Match;
@@ -11,11 +10,9 @@ import dev.emortal.api.model.matchmaker.Ticket;
 import dev.emortal.api.service.matchmaker.MatchmakerService;
 import dev.emortal.api.utils.GrpcStubCollection;
 import io.grpc.StatusRuntimeException;
-import net.kyori.adventure.key.Key;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
-import net.minestom.server.event.server.ServerListPingEvent;
 import net.minestom.server.instance.IChunkLoader;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.network.packet.server.common.CookieStorePacket;
@@ -32,10 +29,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.atomic.AtomicLong;
 
 public final class MinestomEdgeServer {
     private static final Logger LOGGER = LoggerFactory.getLogger(MinestomEdgeServer.class);
@@ -59,6 +54,8 @@ public final class MinestomEdgeServer {
             .build();
     // pendingTransfers - a Proxy has been found, the configuration event thread is unlocked and data is retrieved from here
     private final Map<UUID, Assignment> pendingTransfers = new ConcurrentHashMap<>();
+
+    private final AtomicLong globalPlayerCount = new AtomicLong(0);
 
     public MinestomEdgeServer() {
         this.server = MinecraftServer.init();
@@ -104,12 +101,11 @@ public final class MinestomEdgeServer {
             player.sendPacket(new TransferPacket(foundProxy.getServerAddress(), foundProxy.getServerPort()));
         });
 
-        MinecraftServer.getGlobalEventHandler().addListener(ServerListPingEvent.class, ServerPingListener::onServerPing);
+        new ServerPingListener();
 
         this.messaging.addListener(MatchCreatedMessage.class, this::handleMatchCreated);
 
         AgonesHandler agonesHandler = new AgonesHandler();
-
         MinecraftServer.getSchedulerManager().buildShutdownTask(agonesHandler::shutdown);
 
         this.server.start(ADDRESS, PORT);

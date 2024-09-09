@@ -1,16 +1,21 @@
 package dev.emortal.minestom.edge;
 
+import dev.emortal.api.service.playertracker.PlayerTrackerService;
+import dev.emortal.api.utils.GrpcStubCollection;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.minestom.server.MinecraftServer;
 import net.minestom.server.event.server.ServerListPingEvent;
 import net.minestom.server.ping.ResponseData;
+import net.minestom.server.utils.time.TimeUnit;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.InputStream;
 import java.util.Base64;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
 
 final class ServerPingListener {
     private static final String[] MOTDS = new String[] {
@@ -38,6 +43,8 @@ final class ServerPingListener {
             .append(Component.text("              ░▒▓", NamedTextColor.GOLD))
             .build();
 
+    private static final int MAX_PLAYERS = 3000;
+
     private static final String FAVICON;
 
     static {
@@ -56,14 +63,35 @@ final class ServerPingListener {
         }
     }
 
-    public static void onServerPing(@NotNull ServerListPingEvent event) {
+    private final AtomicInteger globalPlayerCount = new AtomicInteger(0);
+
+    public ServerPingListener() {
+        this.startPlayerCountUpdates();
+    }
+
+    private void startPlayerCountUpdates() {
+        PlayerTrackerService playerTracker = GrpcStubCollection.getPlayerTrackerService().orElse(null);
+        if (playerTracker == null) return;
+
+        MinecraftServer.getSchedulerManager().buildTask(() -> {
+                    this.globalPlayerCount.set((int) playerTracker.getGlobalPlayerCount());
+                }).delay(1, TimeUnit.CLIENT_TICK)
+                .repeat(40, TimeUnit.CLIENT_TICK)
+                .schedule();
+
+        MinecraftServer.getGlobalEventHandler().addListener(ServerListPingEvent.class, this::onServerPing);
+    }
+
+    public void onServerPing(@NotNull ServerListPingEvent event) {
         ResponseData responseData = event.getResponseData();
         responseData.setDescription(createMessage());
         responseData.setFavicon(FAVICON);
+        responseData.setOnline(this.globalPlayerCount.get());
+        responseData.setMaxPlayer(MAX_PLAYERS);
     }
 
-    private static @NotNull Component createMessage() {
-        String randomMessage = selectRandomMessage();
+    private @NotNull Component createMessage() {
+        String randomMessage = this.selectRandomMessage();
         return Component.text()
                 .append(PING_MOTD)
                 .appendNewline()
@@ -71,7 +99,7 @@ final class ServerPingListener {
                 .build();
     }
 
-    private static @NotNull String selectRandomMessage() {
+    private @NotNull String selectRandomMessage() {
         return MOTDS[ThreadLocalRandom.current().nextInt(MOTDS.length)];
     }
 }
