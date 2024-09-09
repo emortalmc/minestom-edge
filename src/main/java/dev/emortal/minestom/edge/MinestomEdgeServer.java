@@ -15,6 +15,7 @@ import net.kyori.adventure.key.Key;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
+import net.minestom.server.event.server.ServerListPingEvent;
 import net.minestom.server.instance.IChunkLoader;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.network.packet.server.common.CookieStorePacket;
@@ -102,6 +103,8 @@ public final class MinestomEdgeServer {
             LOGGER.info("Sending player '{}' to proxy '{}'", player.getUsername(), foundProxy.getServerId());
             player.sendPacket(new TransferPacket(foundProxy.getServerAddress(), foundProxy.getServerPort()));
         });
+
+        MinecraftServer.getGlobalEventHandler().addListener(ServerListPingEvent.class, ServerPingListener::onServerPing);
 
         this.messaging.addListener(MatchCreatedMessage.class, this::handleMatchCreated);
 
