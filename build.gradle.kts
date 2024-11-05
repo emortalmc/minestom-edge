@@ -26,7 +26,7 @@ dependencies {
 
     // EmortalMC
     implementation("dev.emortal.api:common-proto-sdk:b05808d")
-    implementation("dev.emortal.api:agones-sdk:1.1.0")
+    implementation("dev.emortal.api:agones-sdk:8a0d297")
 
     // Monitoring
     implementation("io.pyroscope:agent:0.12.2")
