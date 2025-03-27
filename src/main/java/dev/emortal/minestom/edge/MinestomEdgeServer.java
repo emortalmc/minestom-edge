@@ -10,6 +10,7 @@ import dev.emortal.api.model.matchmaker.Ticket;
 import dev.emortal.api.service.matchmaker.MatchmakerService;
 import dev.emortal.api.utils.GrpcStubCollection;
 import io.grpc.StatusRuntimeException;
+import net.kyori.adventure.key.Key;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
@@ -17,7 +18,6 @@ import net.minestom.server.instance.IChunkLoader;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.network.packet.server.common.CookieStorePacket;
 import net.minestom.server.network.packet.server.common.TransferPacket;
-import net.minestom.server.utils.NamespaceID;
 import org.jetbrains.annotations.Blocking;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,7 +37,7 @@ public final class MinestomEdgeServer {
 
     private static final String ADDRESS = "0.0.0.0";
     private static final int PORT = 25565;
-    private static final NamespaceID COOKIE_NAME = NamespaceID.from("emortalmc", "proxy_route_token");
+    private static final Key COOKIE_NAME = Key.key("emortalmc", "proxy_route_token");
     private static final String KAFKA_HOST = System.getenv("KAFKA_HOST");
     private static final String KAFKA_PORT = System.getenv("KAFKA_PORT");
 

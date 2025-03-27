@@ -17,11 +17,11 @@ repositories {
 
 dependencies {
     // Minestom
-    implementation("net.minestom:minestom-snapshots:1_21_4-735f656119")
-    implementation("net.kyori:adventure-text-minimessage:4.15.0")
+    implementation("net.minestom:minestom-snapshots:1_21_5-0473b41b2a")
+    implementation("net.kyori:adventure-text-minimessage:4.18.0")
 
     // Logger
-    implementation("ch.qos.logback:logback-classic:1.5.1")
+    implementation("ch.qos.logback:logback-classic:1.5.18")
     implementation("net.logstash.logback:logstash-logback-encoder:7.4")
 
     // EmortalMC
