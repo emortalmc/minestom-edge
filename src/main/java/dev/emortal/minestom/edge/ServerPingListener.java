@@ -13,8 +13,6 @@ import net.minestom.server.utils.time.TimeUnit;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -60,7 +58,7 @@ final class ServerPingListener {
         if (bytes == null) {
             FAVICON = null;
         } else {
-            FAVICON = ("data:image/png;base64," + Base64.getEncoder().encodeToString(bytes)).getBytes(StandardCharsets.UTF_8);
+            FAVICON = bytes;
         }
     }
 
