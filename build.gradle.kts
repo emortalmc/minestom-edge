@@ -1,6 +1,6 @@
 plugins {
     java
-    id("com.gradleup.shadow") version "9.0.0-beta11"
+    id("com.gradleup.shadow") version "9.0.0-rc1"
 }
 
 group = "dev.emortal.minestom"
@@ -17,8 +17,8 @@ repositories {
 
 dependencies {
     // Minestom
-    implementation("net.minestom:minestom-snapshots:1_21_5-0473b41b2a")
-    implementation("net.kyori:adventure-text-minimessage:4.18.0")
+    implementation("net.minestom:minestom:2025.07.17-1.21.8")
+    implementation("net.kyori:adventure-text-minimessage:4.23.0")
 
     // Logger
     implementation("ch.qos.logback:logback-classic:1.5.18")

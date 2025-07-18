@@ -8,11 +8,12 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.event.server.ServerListPingEvent;
-import net.minestom.server.ping.ResponseData;
+import net.minestom.server.ping.Status;
 import net.minestom.server.utils.time.TimeUnit;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -45,7 +46,7 @@ final class ServerPingListener {
 
     private static final int MAX_PLAYERS = 3000;
 
-    private static final String FAVICON;
+    private static final byte[] FAVICON;
 
     static {
         InputStream inputStream = ServerListPingEvent.class.getResourceAsStream("/server-icon.png");
@@ -59,7 +60,7 @@ final class ServerPingListener {
         if (bytes == null) {
             FAVICON = null;
         } else {
-            FAVICON = "data:image/png;base64," + Base64.getEncoder().encodeToString(bytes);
+            FAVICON = ("data:image/png;base64," + Base64.getEncoder().encodeToString(bytes)).getBytes(StandardCharsets.UTF_8);
         }
     }
 
@@ -83,11 +84,15 @@ final class ServerPingListener {
     }
 
     public void onServerPing(@NotNull ServerListPingEvent event) {
-        ResponseData responseData = event.getResponseData();
-        responseData.setDescription(createMessage());
-        responseData.setFavicon(FAVICON);
-        responseData.setOnline(this.globalPlayerCount.get());
-        responseData.setMaxPlayer(MAX_PLAYERS);
+        event.setStatus(
+                new Status(
+                        createMessage(),
+                        FAVICON,
+                        Status.VersionInfo.DEFAULT,
+                        new Status.PlayerInfo(this.globalPlayerCount.get(), MAX_PLAYERS),
+                        false
+                )
+        );
     }
 
     private @NotNull Component createMessage() {
