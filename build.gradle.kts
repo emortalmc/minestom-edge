@@ -1,6 +1,6 @@
 plugins {
     java
-    id("com.gradleup.shadow") version "9.0.0-rc1"
+    id("com.gradleup.shadow") version "9.0.0-rc3"
 }
 
 group = "dev.emortal.minestom"
@@ -17,8 +17,8 @@ repositories {
 
 dependencies {
     // Minestom
-    implementation("net.minestom:minestom:2025.07.17-1.21.8")
-    implementation("net.kyori:adventure-text-minimessage:4.23.0")
+    implementation("net.minestom:minestom:2025.07.30-1.21.8")
+    implementation("net.kyori:adventure-text-minimessage:4.24.0")
 
     // Logger
     implementation("ch.qos.logback:logback-classic:1.5.18")
@@ -29,7 +29,6 @@ dependencies {
     implementation("dev.emortal.api:agones-sdk:8a0d297")
 
     // Monitoring
-    implementation("io.pyroscope:agent:0.12.2")
     implementation("io.micrometer:micrometer-registry-prometheus:1.12.1")
 
     implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
@@ -39,7 +38,7 @@ dependencies {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
+        languageVersion.set(JavaLanguageVersion.of(24))
     }
 }
 
