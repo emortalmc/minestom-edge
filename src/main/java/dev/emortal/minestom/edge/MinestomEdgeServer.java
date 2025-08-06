@@ -60,8 +60,7 @@ public final class MinestomEdgeServer {
     public MinestomEdgeServer() {
         System.setProperty("minestom.chunk-view-distance", "2");
         System.setProperty("minestom.new-socket-write-lock", "true");
-        System.setProperty("minestom.tps", "40");
-        MinecraftServer.setCompressionThreshold(0);
+        System.setProperty("minestom.tps", "1");
 
         this.server = MinecraftServer.init();
         this.instance = MinecraftServer.getInstanceManager().createInstanceContainer(IChunkLoader.noop());
